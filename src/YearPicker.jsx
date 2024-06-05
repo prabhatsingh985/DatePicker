@@ -29,7 +29,7 @@ const YearPicker = ({ selectedYear, setSelectedYear }) => {
       setSelectedYear(selectedYear + 1);
     }
     if (touchEndY - touchStartY > 50) {
-      setSelectedYear(selectedYear - 1);
+      setSelectedYear(selectedYear - -1);
     }
   };
 

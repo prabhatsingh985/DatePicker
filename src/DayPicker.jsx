@@ -1,8 +1,3 @@
-
-
-
-
-
 import React, { useState } from 'react';
 import './DatePicker.css'; // Import your CSS file
 
@@ -28,9 +23,9 @@ const DayPicker = ({ selectedDay, setSelectedDay }) => {
     const touchEndY = touch.clientY;
 
     if (touchStartY - touchEndY > 10) {
-      setSelectedDay(selectedDay === 31 ? 1 : selectedDay + 1);
+      setSelectedDay(selectedDay >= 31 ? 1 : selectedDay + 1);
     } else if (touchEndY - touchStartY > 10) {
-      setSelectedDay(selectedDay === 1 ? 31 : selectedDay - 1);
+      setSelectedDay(selectedDay <= 1 ? 31 : selectedDay - 1);
     }
 
     setTouchStartY(null);

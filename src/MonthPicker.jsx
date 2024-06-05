@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import './DatePicker.css'; // Import your CSS file
 
 const MonthPicker = ({ selectedMonth, setSelectedMonth }) => {
@@ -7,32 +7,34 @@ const MonthPicker = ({ selectedMonth, setSelectedMonth }) => {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  const touchStartY = useRef(null);
+  let startY = 0;
+  let endY = 0;
+
+  const handleTouchStart = (event) => {
+    const touch = event.touches[0];
+    setTouchStartY(touch.clientY);
+  };
+
+  const handleTouchMove = (event) => {
+    if (!touchStartY) return;
+    const touch = event.touches[0];
+    const touchEndY = touch.clientY;
+    if (touchStartY - touchEndY > 10) {
+      setSelectedMonth(selectedMonth >= 12 ? 1 : selectedMonth + 1);
+    } else if (touchEndY - touchStartY > 10) {
+      setSelectedMonth(selectedMonth <= 1 ? 12  : selectedMonth - 1);
+    }
+
+    setTouchStartY(null);
+  };
+
+  const [touchStartY, setTouchStartY] = useState(null);
 
   const handleScroll = (event) => {
     if (event.deltaY < 0) {
       setSelectedMonth(selectedMonth === 1 ? 12 : selectedMonth - 1);
     } else {
       setSelectedMonth(selectedMonth === 12 ? 1 : selectedMonth + 1);
-    }
-  };
-
-  const handleTouchStart = (event) => {
-    touchStartY.current = event.touches[0].clientY;
-  };
-
-  const handleTouchMove = (event) => {
-    if (!touchStartY.current) return;
-
-    const touchEndY = event.touches[0].clientY;
-    const diffY = touchStartY.current - touchEndY;
-
-    if (diffY > 5) {
-      setSelectedMonth(selectedMonth === 12 ? 1 : selectedMonth + 1);
-      touchStartY.current = null;
-    } else if (diffY < -5) {
-      setSelectedMonth(selectedMonth === 1 ? 12 : selectedMonth - 1);
-      touchStartY.current = null;
     }
   };
 
@@ -43,9 +45,15 @@ const MonthPicker = ({ selectedMonth, setSelectedMonth }) => {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
     >
-      <div className="picker-item" onClick={() => setSelectedMonth((selectedMonth - 1) < 1 ? 12 : selectedMonth - 1)}>{months[(selectedMonth - 2 + 12) % 12]}</div>
-      <div className="picker-item selected">{months[selectedMonth - 1]}</div>
-      <div className="picker-item" onClick={() => setSelectedMonth((selectedMonth + 1) > 12 ? 1 : selectedMonth + 1)}>{months[selectedMonth % 12]}</div>
+      <div className="picker-item" onClick={() => setSelectedMonth((selectedMonth - 1) < 1 ? 12 : selectedMonth - 1)}>
+        {months[(selectedMonth - 2 + 12) % 12]}
+      </div>
+      <div className="picker-item selected">
+        {months[selectedMonth - 1]}
+      </div>
+      <div className="picker-item" onClick={() => setSelectedMonth((selectedMonth + 1) > 12 ? 1 : selectedMonth + 1)}>
+        {months[selectedMonth % 12]}
+      </div>
     </div>
   );
 };
